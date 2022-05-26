@@ -2,23 +2,23 @@
 
 
 
-## Zielsetzung
-Das Ziel dieses Projekts ist es anhand einer simplen Essens-Rezept Applikation zu zeigen, wie man GraphQL in eine Spring-Anwendung integriert und wie man mit dem Framework Apollo über eine Angular-Anwendung darauf zugreifen kann.
+## Objective
+The goal of this project is to show how to integrate GraphQL into a Spring application and how to access it with the Apollo framework via an Angular application using a simple food recipe application.
 
-Es soll möglich sein, Informationen über der Rezepte in verschiedenen Detail-Graden abzufragen ohne, dass irgendwelche diesbezügliche Anpassungen im Backend vorzunehmen sind, um eine bestmögliche "Seperation of Concerns" umzusetzten.
+It should be possible to retrieve information about the recipes in different levels of detail without having to make any related adjustments in the backend to implement the best possible "Seperation of Concerns".
 
-Es soll eine Übersichtsseite geben, bei der nur der Titel, ein Foto und das Erstelldatum eines Rezepts zu sehen sind.
-Weiters soll es eine Detailseite geben, auf der viele weitere Informationen über das Rezept zu sehen sind (z.B. Zutaten, Zubereitung).
+There should be an overview page, where only the title, a photo and the creation date of a recipe are visible.
+Furthermore, there should be a detail page where a lot of additional information about the recipe can be seen (e.g. ingredients, preparation).
 
 
-## Architektur
+## Architecture
 
 ![alt text](/images/arch.png)
 
-## Umsetzung
+## Implementation
 
-### Integration von GraphQL in Spring
-Definieren der Typen und Inputs
+### Integration of GraphQL with Spring
+Defining the types and inputs
 ```
 input RecipeInput {
     name: String!
@@ -52,19 +52,19 @@ enum MenuType {
 
 scalar OffsetDateTime
 ```
-Um den Datentyp OffsetDateTime nutzen zu können, wie im Code zu sehen ist, muss das Sonatype Repository und eine Bibliothek eingebunden werden.
-Einbinden des Sonatype Repository (wird seit 25.05.2022 nicht mehr benötigt):
+To be able to use the OffsetDateTime data type, as can be seen in the code, the Sonatype repository and a library must be included.
+Include the Sonatype repository (no longer needed since 25.05.2022):
 
 ```gradle
 maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots"}
 ```
-Einbinden der Datetime Bibliothek:
+Include the Datetime library:
 
 ```gradle
 implementation 'com.tailrocks.graphql:graphql-datetime-spring-boot-starter:5.0.0-SNAPSHOT'
 ```
 
-Definieren der Queries und Mutationen
+Defining the queries and mutations
 
 ```java
 type Query {
@@ -102,10 +102,9 @@ public Recipe postRecipe(@Argument RecipeInput recipe) {
 ```
 
 #### N+1 Problem
+If several recipes with the corresponding ingredients are to be queried, this leads to an unnecessarily large number of SELECT statements, since the ingredients for each recipe are queried individually (N+1 problem). To prevent this, we used BatchMapping.
 
-Wenn mehrere Rezepte mit den dazugehörigen Zutaten abgefragt werden sollen, führt dies zu unnötig vielen SELECT-Statements, da die Zutaten für jedes Rezept einzeln abgefragt werden (N+1 Problem). Um dies zu verhindern, haben wir BatchMapping eingesetzt.
-
-Anwendung von ```@BatchMapping``` zur Behebung des N+1 problems
+Using  ```@BatchMapping``` to solve the N+1 problem
 
 ```java
 @BatchMapping
@@ -114,29 +113,28 @@ public Map<Recipe, List<Ingredient>>ingredients(List<Recipe> recipe) {
 }
 ```
 
-Generiertes SELECT-Statement ohne BatchMapping
+Generated SELECT statements without BatchMapping
 
 
 ![alt text](/images/withoutBatchLoading.png)
 
-Generiertes SELECT-Statement mit BatchMapping
-
+Generated SELECT statement with BatchMapping
 
 ![alt text](/images/withBatchLoading.png)
 
 ### GraphiQL
-Um die Weboberfläche GraphiQL zu aktivieren muss eine Bibliothek importiert werden.
+To activate the GraphiQL web interface, a library must be imported.
 ```gradle
 implementation 'com.graphql-java-kickstart:graphiql-spring-boot-starter:11.1.0'
 ```
-Anschließend ist die Oberfläche erreichbar: http://localhost:8888/api/graphiql
+After that, the interface is accessible: http://localhost:8888/api/graphiql
 
 ![alt text](/images/graphiql.jpg)
 
-### Zugriff mit Apollo
+### Access with Apollo
 
 
-Definieren der Queries
+Defining the Queries
 
 ```ts
 import { gql } from "apollo-angular";
@@ -178,7 +176,7 @@ const RECIPE_DESCRIPTIONS = gql`
 export {RECIPE_DESCRIPTIONS,RECIPE_DETAILS,RECIPE_CREATE};
 ```
 
-Ausführen eines GraphQL-Queries in ngOnInit()
+Execute GraphQL queries in ngOnInit()
 
 ```ts
 @Component({
@@ -206,7 +204,7 @@ export class RecipeListComponent implements OnInit {
 ```
 
 
-Ausführen einer GraphQL-Mutation mit Parametern in ```createRecipe()```
+Execute a GraphQL mutation with parameters in ```createRecipe()```
 
 ```ts
 export class RecipeCreateComponent implements OnInit {
@@ -240,22 +238,22 @@ export class RecipeCreateComponent implements OnInit {
 }
 ```
 
-## Ergebnis
-Übersichts-Seite der Angular-App
+## Result
+Angular app overview page
 
 ![alt text](/images/UI-1.png)
 
 
-Detail-Ansicht der einzelnen Rezepte
+Detail view of the individual recipes
 
 ![alt text](/images/UI-2.png)
 
 
-Erzeugen eines neuen Rezepts
+Create a new recipe
 
 ![alt text](/images/UI-3.png)
 
-Neues Rezept ist nun auf der Übersichts-Seite sichtbar
+New recipe is now visible on the overview page
 
 ![alt text](/images/UI-4.png)
 
@@ -299,13 +297,14 @@ Mutation Variables:
 ```
 
 ## Conclusion
-Da "Spring for GraphQL" erst seit wenigen Monaten existiert, gestaltete sich die Integration etwas aufwändiger als wir es von Spring gewohnt waren, doch die ofizielle Dokumentation und die Links, welche Sie uns zur Verfügung gestellt haben, waren äußerst hilfreich. Sehr viel Logik wird über Annotationen abstrahiert, was den erzeugten Code sehr überschaubar hält. 
+Since "Spring for GraphQL" has only been around for a few months, the integration was a bit more involved than we were used to with Spring, but the official documentation and links you provided were extremely helpful. A lot of logic is abstracted via annotations, which keeps the generated code very manageable. 
 
-Wir sehen den großten Vorteil von GraphQL in der Funktionalität, Daten in beliebiger Granularität abfragen zu können, ohne irgendwelchen spezifischen REST-Endpunkte umzusetzten. Dieser Vorteil kommt jedoch erst zu tragen, wenn beispielsweise sehr viele verschiedene Frontend-Applikationen, verschiedene Ausprägungen von Daten benötigen, was bei unserem kleinen Beispiel nicht wirklich der Fall war. Ebenfalls erspart man sich die Definition von vielen verschieden DTOs. Durch die ganz klare "Seperation of Concerns" gestaltete sich das Auslesen der Daten im Frontend sehr angenehm und es werden keine nicht benötigten Daten übertragen.
+We see the biggest advantage of GraphQL in the functionality to query data at any granularity without implementing any specific REST endpoints. However, this advantage only comes into play when, for example, a large number of different frontend applications require different specifications of data, which was not really the case in our small example. Likewise one saves the definition of many different DTOs. Due to the very clear "Seperation of Concerns", the reading of the data in the frontend turned out to be very pleasant and no unneeded data is transferred.
 
 
-## Installationsanleitung
-Das start.ps1 Skript ausführen, dieses führ die Mutlistage-Dockerfiles über das docker-compose aus.
+
+## Installation guide
+Run the start.ps1 script, this will run the mutlistage dockerfiles via the docker-compose.
 
 .\start.ps1 
 
