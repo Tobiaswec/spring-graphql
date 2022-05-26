@@ -1,0 +1,46 @@
+version: '3.1'
+services:
+  graphql_recipe_db:
+    image: mysql:latest
+    volumes:
+      - "./init.sql:/data/application/init.sql"    
+      - "./.mysql-data/db:/var/lib/mysql"
+    restart: always
+    ports:
+      - 3306:3306
+    container_name: graphql_recipe_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    command: --init-file /data/application/init.sql  
+    networks:
+      - db_net
+
+  graphql-service:
+    build:
+      context: ./spring-graphql
+    image: graphql-service
+    container_name: graphql-service
+    ports:
+      - 8888:8888
+    networks:
+      - db_net
+      - service_net
+
+  angular-frontend:
+    build:
+      context: ./recipe-web
+    image: graphql-web
+    ports:
+      - 8080:80
+    networks:
+      - service_net
+
+
+networks:
+  db_net:
+    driver: bridge
+  service_net:
+    driver: bridge

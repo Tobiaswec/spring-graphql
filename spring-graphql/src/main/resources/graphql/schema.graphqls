@@ -1,0 +1,41 @@
+scalar OffsetDateTime
+
+type Query {
+    recipe(id: Int): Recipe
+    recipes(type:String):[Recipe]!
+}
+
+type Mutation {
+    postRecipe(recipe:RecipeInput):Recipe
+    postIngredient(recipeId:Int,ingredientName:String):Recipe
+}
+
+input RecipeInput {
+    name: String!
+    url: String!
+    imageUrl: String!
+    type:String!
+}
+
+type Recipe {
+    id: Int!
+    name: String!
+    description: String!
+    url: String!
+    imageUrl: String!
+    type:String!
+    date:OffsetDateTime
+    ingredients: [Ingredient]
+}
+
+
+type Ingredient {
+    id: Int!
+    name: String!
+}
+
+enum MenuType {
+    MEAT
+    VEGETARIAN
+    VEGAN
+}

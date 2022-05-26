@@ -1,0 +1,18 @@
+
+
+
+
+<div class="card-decl row">
+  <div *ngFor=" let recipe of (recipes|async)" class="card col-md-2" style="width: 18rem; margin:10px">
+
+    <img class="card-img-top" src="{{recipe.imageUrl}}" style="height: 300px; border-radius: 10px; " alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">{{recipe.name}}</h5>
+      <p class="card-text"><small class="text-muted">{{recipe.date}}</small></p>
+      <a [routerLink]="['/details', recipe.id]" class="btn btn-primary">Details</a>
+    </div>
+  </div>
+
+
+</div>
+

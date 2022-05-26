@@ -1,0 +1,23 @@
+<div class="container">
+    <h1 class="my-4">{{recipe.name}}
+      <small>{{recipe.type}}</small>
+    </h1>
+  
+    <div class="row">
+  
+      <div class="col-md-8">
+        <img class="img-fluid" src="{{recipe.imageUrl}}" alt="">
+      </div>
+  
+      <div class="col-md-4">
+        <h3 class="my-3">Description</h3>
+        <p>{{recipe.description}}</p>
+        <h3 class="my-3">Ingredients</h3>
+        <ul>
+          <li *ngFor="let ingredient of recipe.ingredients">{{ingredient.name}}</li>
+        </ul>
+      </div>
+  
+    </div>
+  
+  </div>

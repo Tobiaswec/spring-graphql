@@ -1,0 +1,15 @@
+
+
+<form style="margin: 100px;">
+  <h2>Create new recipe</h2>
+    <div class="form-group" >
+      <label for="name">Recipe-Name</label>
+      <input type="text" class="form-control" name="name"[(ngModel)]="recipeName">
+
+      <label for="url">Recipe-URL</label>
+      <input type="text" class="form-control" name="url"[(ngModel)]="recipeUrl">
+    </div>
+
+    <button type="submit" class="btn btn-primary" (click)="createRecipe()">Create</button>
+</form>
+
